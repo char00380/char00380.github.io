@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PPT百宝箱 · 1TB存储 · 微信扫码下载</title>
+    <!-- 引入 QRCode.js 用于生成二维码 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: linear-gradient(145deg, #f6f9fc 0%, #dce9f2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .card {
+            max-width: 760px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            border-radius: 52px;
+            box-shadow: 0 24px 64px rgba(0, 20, 40, 0.25);
+            padding: 28px 24px 36px;
+            transition: 0.25s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+            color: #0b2b3d;
+            margin-bottom: 4px;
+        }
+        .sub {
+            color: #1f5a78;
+            font-weight: 400;
+            font-size: 1rem;
+            margin-left: 8px;
+            background: rgba(30, 100, 140, 0.12);
+            padding: 2px 16px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        .storage-badge {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1d3e52;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 100px;
+            margin: 16px 0 24px;
+            font-weight: 500;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 6px rgba(255,255,255,0.15);
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .storage-badge span {
+            background: #ffd966;
+            color: #1d3e52;
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .upload-area {
+            background: #ffffffd9;
+            border: 2px dashed #7fa9c2;
+            border-radius: 40px;
+            padding: 32px 20px;
+            text-align: center;
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .upload-area:hover {
+            border-color: #2d7fa0;
+            background: #f0f8ff;
+        }
+        .upload-area input {
+            display: none;
+        }
+        .upload-icon {
+            font-size: 3.2rem;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .file-name {
+            font-weight: 500;
+            color: #104b66;
+            background: #e5f0f7;
+            padding: 6px 18px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            word-break: break-all;
+            max-width: 100%;
+        }
+        .action-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 18px 0 20px;
+            justify-content: center;
+        }
+        .btn {
+            background: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 6px 14px rgba(0, 30, 50, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.15s;
+            cursor: pointer;
+            border: 1px solid transparent;
+            flex: 1 1 auto;
+            justify-content: center;
+            color: #0b2b3d;
+        }
+        .btn-primary {
+            background: #1a4b62;
+            color: white;
+            box-shadow: 0 8px 18px rgba(20, 70, 100, 0.25);
+        }
+        .btn-primary:hover {
+            background: #0d3a4e;
+            transform: scale(0.97);
+        }
+        .btn-success {
+            background: #2e7d5e;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1e6148;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #1a4b62;
+        }
+        .btn-outline:hover {
+            background: #e3f0f9;
+        }
+        .qrcode-section {
+            background: #ffffffd9;
+            border-radius: 36px;
+            padding: 20px 16px;
+            margin: 24px 0 12px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            box-shadow: inset 0 1px 6px rgba(0,0,0,0.02);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .qrcode-box {
+            background: white;
+            padding: 12px;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: inline-block;
+        }
+        #qrcode {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #qrcode img, #qrcode canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 150px;
+        }
+        .qrcode-placeholder {
+            color: #6d8fa3;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 8px;
+        }
+        .download-link {
+            word-break: break-all;
+            background: #f2f8fd;
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #1a4b62;
+            border: 1px solid #c9dde9;
+            max-width: 280px;
+            min-width: 160px;
+            text-align: center;
+        }
+        .download-link a {
+            color: #0f4b6b;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            word-break: break-all;
+        }
+        .file-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: #eef6fb;
+            padding: 10px 18px;
+            border-radius: 60px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #1d4b61;
+        }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #b34141;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline dotted;
+            padding: 0 6px;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 24px;
+            color: #3c6e88;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .wechat-tip {
+            background: #e2f0e6;
+            color: #1a5a3a;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        @media (max-width: 480px) {
+            .card { padding: 20px 16px; }
+            h1 { font-size: 1.8rem; }
+            .qrcode-section { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="app">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <h1>
+            📁 PPT百宝箱
+            <span class="sub">扫码下载</span>
+        </h1>
+        <span style="font-size: 0.8rem; background: #1d3e52; color: white; padding: 4px 14px; border-radius: 40px;">微信 · 通用</span>
+    </div>
+    <!-- 存储容量显示 1TB -->
+    <div class="storage-badge">
+        <span>💾 存储空间</span>
+        <span id="storageDisplay">1 TB</span>
+    </div>
+
+    <!-- 上传区域 -->
+    <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📤</div>
+        <div style="font-weight: 500; color: #1a4b62;">点击上传 PPT 文件</div>
+        <div style="font-size: 0.8rem; color: #4b7e9b; margin-top: 6px;">支持 .ppt .pptx · 最大 1TB (理论)</div>
+        <input type="file" id="fileInput" accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+        <div id="fileNameDisplay" class="file-name" style="display: none;">📎 未命名</div>
+    </div>
+
+    <!-- 操作按钮组 -->
+    <div class="action-grid">
+        <button class="btn btn-primary" id="uploadBtn">⬆️ 上传并存储</button>
+        <button class="btn btn-success" id="generateQRBtn">📱 生成下载二维码</button>
+    </div>
+
+    <!-- 二维码 + 下载链接区域 (微信扫码优化) -->
+    <div class="qrcode-section" id="qrSection">
+        <div class="qrcode-box">
+            <div id="qrcode">
+                <div class="qrcode-placeholder">⬜ 扫码下载</div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; align-items: center; min-width: 160px;">
+            <div style="font-weight: 600; color: #104b66;">📲 微信 / 浏览器扫码</div>
+            <div id="downloadLinkContainer" class="download-link">
+                <span style="color: #4d7a94;">暂无文件</span>
+            </div>
+            <div class="wechat-tip">✅ 微信内扫码可下载</div>
+            <div style="font-size: 0.7rem; color: #3f728e;">链接有效期 · 存储期间有效</div>
+        </div>
+    </div>
+
+    <!-- 当前文件信息 & 清除 -->
+    <div class="file-info" id="fileInfo">
+        <span>📄 <span id="currentFileName">未上传文件</span></span>
+        <span id="fileSizeDisplay">0 KB</span>
+        <button class="clear-btn" id="clearFileBtn">🗑️ 清除文件</button>
+    </div>
+    <div class="footer-note">
+        ⚡ 存储上限 1 TB (1024 GB) · 数据保存在浏览器本地 (IndexedDB)
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+
+        // ----- DOM 引用 -----
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const currentFileName = document.getElementById('currentFileName');
+        const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+        const storageDisplay = document.getElementById('storageDisplay');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const generateQRBtn = document.getElementById('generateQRBtn');
+        const clearFileBtn = document.getElementById('clearFileBtn');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const downloadLinkContainer = document.getElementById('downloadLinkContainer');
+
+        // ----- 状态 -----
+        let storedFile = null;           // { name, size, type, data (ArrayBuffer), timestamp }
+        const DB_NAME = 'PPTStorageDB';
+        const STORE_NAME = 'pptFiles';
+        const DB_VERSION = 1;
+        let db = null;
+
+        // 存储上限 1 TB = 1024 GB = 1099511627776 bytes
+        const MAX_STORAGE_BYTES = 1024 * 1024 * 1024 * 1024; // 1 TB
+
+        // ----- 辅助函数 -----
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+            if (bytes < 1099511627776) return (bytes / 1073741824).toFixed(2) + ' GB';
+            return (bytes / 1099511627776).toFixed(2) + ' TB';
+        }
+
+        // 更新界面存储显示 (固定1TB, 展示已用/剩余)
+        function updateStorageUI() {
+            let used = 0;
+            if (storedFile) {
+                used = storedFile.size || 0;
+            }
+            const free = Math.max(0, MAX_STORAGE_BYTES - used);
+            // 显示已用 / 1TB
+            storageDisplay.textContent = `${formatSize(used)} / 1 TB`;
+        }
+
+        // 更新文件信息展示
+        function updateFileInfoUI() {
+            if (storedFile) {
+                currentFileName.textContent = storedFile.name || '未命名文件';
+                fileSizeDisplay.textContent = formatSize(storedFile.size || 0);
+                fileNameDisplay.style.display = 'inline-block';
+                fileNameDisplay.textContent = `📎 ${storedFile.name}`;
+                // 更新下载链接区域 (使用blob url)
+                const blob = new Blob([storedFile.data], { type: storedFile.type || 'application/vnd.ms-powerpoint' });
+                const url = URL.createObjectURL(blob);
+                // 增强：下载链接直接指向blob，微信扫码可下载 (通过浏览器或微信内置)
+                downloadLinkContainer.innerHTML = `<a href="${url}" download="${storedFile.name}" target="_blank" rel="noopener noreferrer">⬇️ 下载 ${storedFile.name}</a>`;
+                // 存储 blob url 供二维码使用
+                qrcodeContainer.dataset.blobUrl = url;
+                qrcodeContainer.dataset.fileName = storedFile.name;
+            } else {
+                currentFileName.textContent = '未上传文件';
+                fileSizeDisplay.textContent = '0 KB';
+                fileNameDisplay.style.display = 'none';
+                downloadLinkContainer.innerHTML = `<span style="color:#4d7a94;">暂无文件</span>`;
+                qrcodeContainer.dataset.blobUrl = '';
+                qrcodeContainer.dataset.fileName = '';
+                // 清空二维码
+                qrcodeContainer.innerHTML = `<div class="qrcode-placeholder">⬜ 扫码下载</div>`;
+            }
+            updateStorageUI();
+        }
+
+        // ----- 初始化 IndexedDB -----
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        // 保存文件到 IndexedDB
+        function saveFileToDB(fileData) {
+            return new Promise((resolve, reject) => {
+                if (!db) return reject(new Error('数据库未初始化'));
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const record = {
+                    id: 'pptFile',
+                    name: fileData.name,
+                    size: fileData.size,
+                    type: fileData.type,
+                    data: fileData.data,
+                    timestamp: Date.now()
+                };
+                const request = store.put(record);
+                request.onsuccess = () => resolve(record);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // 从 IndexedDB 加载文件
+        function loadFileFromDB() {
+            return new Promise((resolve, reject) => {
+                if (!db) return reject(new Error('数据库未初始化'));
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get('pptFile');
+                request.onsuccess = () => {
+                    const record = request.result;
+                    if (record) {
+                        resolve(record);
+                    } else {
+                        resolve(null);
+                    }
+                };
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // 删除 IndexedDB 文件
+        function deleteFileFromDB() {
+            return new Promise((resolve, reject) => {
+                if (!db) return reject(new Error('数据库未初始化'));
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete('pptFile');
+                request.onsuccess = () => resolve();
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // ----- 核心业务 -----
+        async function loadStoredFile() {
+            try {
+                const record = await loadFileFromDB();
+                if (record) {
+                    storedFile = {
+                        name: record.name,
+                        size: record.size,
+                        type: record.type,
+                        data: record.data,
+                        timestamp: record.timestamp
+                    };
+                } else {
+                    storedFile = null;
+                }
+                updateFileInfoUI();
+                if (storedFile) {
+                    generateQRCodeForCurrentFile();
+                }
+            } catch (e) {
+                console.warn('加载存储文件失败', e);
+                storedFile = null;
+                updateFileInfoUI();
+            }
+        }
+
+        // 上传并存储文件
+        async function uploadAndStore(file) {
+            if (!file) {
+                alert('请先选择一个PPT文件');
+                return false;
+            }
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['ppt', 'pptx'].includes(ext)) {
+                alert('请上传 .ppt 或 .pptx 格式的PPT文件');
+                return false;
+            }
+            if (file.size > MAX_STORAGE_BYTES) {
+                alert(`文件大小 (${formatSize(file.size)}) 超过 1 TB 限制`);
+                return false;
+            }
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const fileData = {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type || 'application/vnd.ms-powerpoint',
+                    data: arrayBuffer
+                };
+                await saveFileToDB(fileData);
+                storedFile = fileData;
+                updateFileInfoUI();
+                generateQRCodeForCurrentFile();
+                alert(`✅ PPT "${file.name}" 已存储 (${formatSize(file.size)})`);
+                return true;
+            } catch (error) {
+                console.error('存储失败', error);
+                alert('存储失败，请重试。错误: ' + error.message);
+                return false;
+            }
+        }
+
+        // 生成二维码 (基于 blob url，优化微信扫码)
+        function generateQRCodeForCurrentFile() {
+            const container = qrcodeContainer;
+            if (!storedFile) {
+                container.innerHTML = `<div class="qrcode-placeholder">⬜ 扫码下载</div>`;
+                return;
+            }
+            // 创建 blob url
+            const blob = new Blob([storedFile.data], { type: storedFile.type || 'application/vnd.ms-powerpoint' });
+            const url = URL.createObjectURL(blob);
+            qrcodeContainer.dataset.blobUrl = url;
+            // 清空并生成二维码
+            container.innerHTML = '';
+            try {
+                // 二维码内容为 blob URL，微信扫码后可直接下载 (需在浏览器中打开)
+                new QRCode(container, {
+                    text: url,
+                    width: 150,
+                    height: 150,
+                    colorDark: "#1a4b62",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                // 更新下载链接
+                downloadLinkContainer.innerHTML = `<a href="${url}" download="${storedFile.name}" target="_blank" rel="noopener noreferrer">⬇️ 下载 ${storedFile.name}</a>`;
+            } catch (e) {
+                console.warn('二维码生成失败', e);
+                container.innerHTML = `<div class="qrcode-placeholder">⚠️ 二维码生成失败</div>`;
+            }
+        }
+
+        // 清除文件
+        async function clearStoredFile() {
+            if (!storedFile) {
+                alert('当前没有存储的文件');
+                return;
+            }
+            const confirmClear = confirm(`确定要删除 "${storedFile.name}" 吗？`);
+            if (!confirmClear) return;
+            try {
+                await deleteFileFromDB();
+                storedFile = null;
+                updateFileInfoUI();
+                qrcodeContainer.innerHTML = `<div class="qrcode-placeholder">⬜ 扫码下载</div>`;
+                downloadLinkContainer.innerHTML = `<span style="color:#4d7a94;">暂无文件</span>`;
+                alert('文件已清除');
+            } catch (e) {
+                alert('清除失败: ' + e.message);
+            }
+        }
+
+        // ----- 事件绑定 -----
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameDisplay.style.display = 'inline-block';
+                fileNameDisplay.textContent = `📎 ${file.name}`;
+            } else {
+                fileNameDisplay.style.display = 'none';
+            }
+        });
+        uploadBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('请先点击上传区域选择PPT文件');
+                return;
+            }
+            await uploadAndStore(file);
+            fileInput.value = '';
+            fileNameDisplay.style.display = 'none';
+        });
+        generateQRBtn.addEventListener('click', () => {
+            if (!storedFile) {
+                alert('请先上传并存储一个PPT文件');
+                return;
+            }
+            generateQRCodeForCurrentFile();
+            alert('✅ 二维码已刷新，微信/浏览器扫码即可下载');
+        });
+        clearFileBtn.addEventListener('click', clearStoredFile);
+
+        // ----- 初始化 -----
+        async function init() {
+            try {
+                await openDB();
+                await loadStoredFile();
+            } catch (e) {
+                console.error('初始化失败', e);
+                alert('无法连接本地存储，请检查浏览器是否支持 IndexedDB');
+            }
+        }
+        init();
+
+        console.log('📦 PPT百宝箱 · 1TB 存储 · 微信扫码下载已优化');
+    })();
+</script>
+</body>
+</html>
